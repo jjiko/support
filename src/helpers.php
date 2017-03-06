@@ -5,7 +5,7 @@ function asset_revision($key)
   if(in_array(App::environment(), ['production', 'staging'])) {
     if ($manifest = getJson(base_path() . '/build/assets/rev-manifest.json')) {
       if (property_exists($manifest, $prefix . $key)) {
-        return '/dist/' . $prefix . $manifest{$prefix . $key};
+        return '/dist/' . $prefix . $manifest->{$prefix . $key};
       }
     }
   }

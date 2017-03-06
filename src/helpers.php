@@ -2,7 +2,7 @@
 function asset_revision_css($manifest, $key)
 {
   if (property_exists($manifest, $key)) {
-    return '/css/' . $manifest->{$key};
+    return '/dist/css/' . $manifest->{$key};
   }
 }
 

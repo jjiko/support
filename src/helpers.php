@@ -1,30 +1,27 @@
 <?php
-function asset_revision_css($manifest, $key)
-{
-  if (property_exists($manifest, $key)) {
-    return '/dist/css/' . $manifest->{$key};
-  }
-}
-
 function asset_revision($key)
 {
-  if ($manifest = getJson(base_path() . '/build/assets/rev-manifest.json')) {
-    if (strpos($key, '.css')) {
-      return asset_revision_css($manifest, $key);
+  $prefix = strpos($key, '.css') ? 'css/' : 'js/';
+  if(in_array(App::environment(), ['production', 'staging'])) {
+    if ($manifest = getJson(base_path() . '/build/assets/rev-manifest.json')) {
+      if (property_exists($manifest, $prefix . $key)) {
+        return '/dist/' . $prefix . $manifest{$prefix . $key};
+      }
     }
   }
 
-  return "/revision/missing-$key";
+  //return "/revision/missing-$key";
+  return sprintf("/dist/%s%s", $prefix, $key);
 }
 
 function cdn_path()
 {
-  return "https://".env("CDN_PATH", 'cdn.joejiko.com');
+  return "https://" . env("CDN_PATH", 'cdn.joejiko.com');
 }
 
 function cdn_img_path()
 {
-  return cdn_path()."/img";
+  return cdn_path() . "/img";
 }
 
 /**
@@ -55,7 +52,8 @@ function shorten($url)
   return Jiko\Shorten\Bitly\Bitly::url($url);
 }
 
-function amazon_link($ASIN, $text) {
+function amazon_link($ASIN, $text)
+{
   return sprintf('<a href="//www.amazon.com/gp/product/%s/?tag=joji08-20">%s</a>', $ASIN, $text);
 }
 
@@ -72,7 +70,7 @@ function getJson($url)
   ]);
   $contents = @file_get_contents($url, false, $ctx);
 
-  if($contents === false) {
+  if ($contents === false) {
     $err_message = "file_get_contents failed for url or took longer than 5 seconds.";
     $err_params = [
       "url" => $url
@@ -84,7 +82,7 @@ function getJson($url)
   }
 
   $data = json_decode($contents);
-  if($data === null && json_last_error() !== JSON_ERROR_NONE) {
+  if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
     $err_message = "JSON decode failed on file_get_contents response.";
     $err_params = ["url" => $url, "json_last_error" => json_last_error(), "json_last_error_msg" => json_last_error_msg()];
 

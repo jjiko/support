@@ -47,9 +47,11 @@ function img_path($path = '')
   return cdn_path() . "/$path";
 }
 
+
+app()->singleton('Jiko\Shorten\Bitly\Bitly');
 function shorten($url)
 {
-  return Jiko\Shorten\Bitly\Bitly::url($url);
+  return app('Jiko\Shorten\Bitly\Bitly')->url($url);
 }
 
 function amazon_link($ASIN, $text)

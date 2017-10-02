@@ -12,11 +12,6 @@ class SupportServiceProvider extends ServiceProvider
     parent::boot();
   }
 
-  public function register()
-  {
-
-  }
-
   public function map(Router $router)
   {
     require_once(__DIR__.'/../helpers.php');

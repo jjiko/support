@@ -15,5 +15,12 @@
     "psr-4": {
       "Jiko\\Support\\": "src/"
     }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Jiko\\Support\\Providers\\SupportServiceProvider"
+      ]
+    }
   }
 }

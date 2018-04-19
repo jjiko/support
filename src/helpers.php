@@ -1,8 +1,32 @@
 <?php
+function wake_on_lan($macAddressHexadecimal, $broadcastAddress)
+{
+  $macAddressHexadecimal = str_replace(':', '', $macAddressHexadecimal);
+  // check if $macAddress is a valid mac address
+  try {
+    if (!ctype_xdigit($macAddressHexadecimal)) {
+      throw new \Exception('Mac address invalid, only 0-9 and a-f are allowed');
+    }
+  } catch (\Exception $e) {
+    //
+  }
+  $macAddressBinary = pack('H12', $macAddressHexadecimal);
+  $magicPacket = str_repeat(chr(0xff), 6) . str_repeat($macAddressBinary, 16);
+  try {
+    if (!$fp = fsockopen('udp://' . $broadcastAddress, 7, $errno, $errstr, 2)) {
+      throw new \Exception("Cannot open UDP socket: {$errstr}", $errno);
+    }
+  } catch (\Exception $e) {
+    //
+  }
+  fputs($fp, $magicPacket);
+  fclose($fp);
+}
+
 function asset_revision($key)
 {
   $prefix = strpos($key, '.css') ? 'css/' : 'js/';
-  if(in_array(App::environment(), ['production', 'staging'])) {
+  if (in_array(App::environment(), ['production', 'staging'])) {
     if ($manifest = getJson(base_path() . '/build/assets/rev-manifest.json')) {
       if (property_exists($manifest, $prefix . $key)) {
         return '/dist/' . $manifest->{$prefix . $key};
